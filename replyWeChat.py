@@ -13,7 +13,7 @@ global  MyUserName
 MyUserName = ''
 
 #给公众号发送消息
-def sendGzh(str):
+def send_gzh(str):
 	#返回完整的公众号列表
 	mps = itchat.get_mps()
 	#按公众号名称查找,返回为列表
@@ -23,7 +23,7 @@ def sendGzh(str):
 	itchat.send(str,toUserName = userName)
 
 #获取聊天机器人接口返回数据
-def getReplyText(str):
+def get_reply_text(str):
 	# 发送到web服务器的表单数据
 	formdata = {
 	"key" : "free",
@@ -62,12 +62,12 @@ def text_reply(msg):
 	replyText = ''
 	#方式一：通过接口获取数据
 	''' 
-		replyText = getReplyText(str = msg.text)
+		replyText = get_reply_text(str = msg.text)
 		msg.user.send("小新智能机器人自动回复:\n 上班时间将由智能机器人自动给您回复，如有急事请及时电话联系！" + replyText)
 	'''
 	
 	#方式二：通过微软小冰获取数据,属于异步消息
-	sendGzh(str = msg.text)
+	send_gzh(str = msg.text)
 	#replyText = get_gzh_text(msg)
 	print("接收到的消息:replyText" + replyText)
 	global MyUserName
