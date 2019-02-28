@@ -12,6 +12,9 @@ MapName = '@40ac8c5b82141cb51f50d05b78f0ef75'
 global My_USER_NAME
 My_USER_NAME = ''
 
+global FIRST_SEND
+FIRST_SEND = True
+
 #给公众号发送消息
 def send_gzh(str):
 	#返回完整的公众号列表
@@ -47,34 +50,49 @@ def get_reply_text(str):
 def get_gzh_text(msg):
     global My_USER_NAME
     print('%s: %s' % (msg['Type'], msg['Text']), msg['FromUserName'])	
-	#return msg['Text']
+    #return msg['Text']
     #itchat.send(msg['Text'],toUserName = My_USER_NAME)
-    print("保存的username"+ My_USER_NAME)
+    #print("保存的username"+ My_USER_NAME)
     itchat.send(msg['Text'], My_USER_NAME)
     #return msg['Text'] 如果return消息内容将会和公众号一直聊天
+    print("---------------------------------------------")
+    print("                                             ")
+    
+#注册图片接收器   
+@itchat.msg_register(itchat.content.PICTURE, isMpChat=True)
+def get_gzh_img(msg):
+    global My_USER_NAME
+    print('%s: %s' % (msg['Type'], msg['Text']), msg['FromUserName'])
+    #msg.download(msg['FileName'])   #这个同样是下载文件的方式	
+    msg['Text'](msg['FileName'])      #下载文件
+    #将下载的文件发送给发送者
+    itchat.send('@%s@%s' % ('img' if msg['Type'] == 'Picture' else 'fil', msg["FileName"]),My_USER_NAME)
+    print("---------------------------------------------")
+    print("                                             ")
 
 #接收好友消息
 @itchat.msg_register(itchat.content.TEXT)
 def text_reply(msg):
-	# msg.text这是接收到的信息，send自定义发送内容
-	# msg.user.send("小新智能机器人自动回复:" + msg.text)
-	print("接收到的消息:" + msg['FromUserName'])
-	replyText = ''
-	#方式一：通过接口获取数据
-	''' 
-		replyText = get_reply_text(str = msg.text)
-		msg.user.send("小新智能机器人自动回复:\n 上班时间将由智能机器人自动给您回复，如有急事请及时电话联系！" + replyText)
-	'''
-	
-	#方式二：通过微软小冰获取数据,属于异步消息
-	send_gzh(str = msg.text)
-	#replyText = get_gzh_text(msg)
-	print("接收到的消息:replyText" + replyText)
-	global My_USER_NAME
-	My_USER_NAME = msg['FromUserName']
-	msg.user.send("小新智能机器人自动回复:\n 上班时间将由智能机器人自动给您回复，如有急事请及时电话联系！")
-	print("智能回复消息:" + msg.text)
-	print("---------------------------------------------")
+    # msg.text这是接收到的信息，send自定义发送内容
+    # msg.user.send("小新智能机器人自动回复:" + msg.text)
+    #print("接收到的消息:" + msg['FromRemarkName'])
+    #replyText = ''
+    #方式一：通过接口获取数据
+    
+    #replyText = get_reply_text(str = msg.text)
+    #msg.user.send("小新智能机器人自动回复:\n 上班时间将由智能机器人自动给您回复，如有急事请及时电话联系！" + replyText)
+    
+    #方式二：通过微软小冰获取数据,属于异步消息
+    send_gzh(str = msg.text)
+    print("接收到的消息:replyText" + msg.text+"  来自:" + msg['FromUserName'])
+    print("                                             ")
+    global My_USER_NAME
+    My_USER_NAME = msg['FromUserName']
+    
+    global FIRST_SEND
+    if FIRST_SEND:
+        msg.user.send("小新智能机器人自动回复:\n 上班时间将由智能机器人自动给您回复，如有急事请及时电话联系！")
+        FIRST_SEND = False
     # return msg.text
 
 #itchat.auto_login()
